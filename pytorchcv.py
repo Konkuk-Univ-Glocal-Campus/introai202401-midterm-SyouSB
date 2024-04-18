@@ -21,15 +21,26 @@ default_device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # 이 함수를 수정해야 함.
 # 1. vaild 추가
-# 2. 함수명(fasion)으로 수정
+
+torch.manual_seed(42) # 재현성을 보장하기 위해 seed 설정.
 
 def load_mnist(batch_size=64): # load_mnist라는 이름의 함수를 정의하고, 이 함수는 기본적으로 batch_size 매개변수를 64로 설정합니다. 이 매개변수는 데이터를 얼마나 많은 단위로 나눌지 결정
     builtins.data_train = torchvision.datasets.FashionMNIST('./data',
         download=True,train=True,transform=ToTensor()) # torchvision 라이브러리의 datasets 모듈을 사용하여 FashionMNIST 데이터셋을 불러옵니다. './data'는 데이터셋이 저장될 경로를 지정하며, download=True는 해당 경로에 데이터가 없을 경우 인터넷에서 자동으로 다운로드하도록 설정합니다. train=True는 학습용 데이터셋을 불러오는 것을 의미하고, transform=ToTensor()는 데이터셋의 이미지들을 파이토치 텐서로 변환하는 함수를 적용
     builtins.data_test = torchvision.datasets.FashionMNIST('./data', 
         download=True,train=False,transform=ToTensor()) # 테스트 데이터셋을 불러오는 코드입니다. train=False로 설정하여 학습용이 아닌 테스트용 데이터셋을 불러옴
+    
+    builtins.data_train, builtins.data_vaild = random_split(data_train, [50000, 10000])
+
+    print(len(data_train))
+    print(len(data_test))
+    print(len(data_vaild))
+    
     builtins.train_loader = torch.utils.data.DataLoader(data_train,batch_size=batch_size, shuffle=True) # 학습 데이터셋을 데이터 로더에 로드합니다. 데이터 로더는 데이터셋을 지정된 배치 크기에 맞게 나누고, 이를 반복 가능한 객체로 만들어 학습 과정에서 쉽게 사용할 수 있게 도움. // 
     builtins.test_loader = torch.utils.data.DataLoader(data_test, batch_size=batch_size, shuffle=True)
+    builtins.valid_loader = torch.utils.data.DataLoader(data_vaild, batch_size=batch_size, shuffle=True)
+
+    
 
 # 신경망을 한 에폭(epoch) 동안 학습하는 과정을 구현한 Python 함수
 # 이 함수는 모델을 학습시키고, 각 배치에서의 평균 손실과 정확도를 계산하여 반환하는데 이를 통해 학습 과정을 모니터링할 수 있음
