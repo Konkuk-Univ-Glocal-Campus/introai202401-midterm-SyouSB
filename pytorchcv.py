@@ -5,6 +5,7 @@ import builtins
 import torch
 import torch.nn as nn
 from torch.utils import data
+from torch.utils.data import random_split
 import torchvision
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
@@ -22,23 +23,22 @@ default_device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # 이 함수를 수정해야 함.
 # 1. vaild 추가
 
-torch.manual_seed(42) # 재현성을 보장하기 위해 seed 설정.
+def load_mnist(batch_size=64, seed=10): # load_mnist라는 이름의 함수를 정의하고, 이 함수는 기본적으로 batch_size 매개변수를 64로 설정합니다. 이 매개변수는 데이터를 얼마나 많은 단위로 나눌지 결정
+    torch.manual_seed(seed) # 재현성을 보장하기 위해 seed 설정.
 
-def load_mnist(batch_size=64): # load_mnist라는 이름의 함수를 정의하고, 이 함수는 기본적으로 batch_size 매개변수를 64로 설정합니다. 이 매개변수는 데이터를 얼마나 많은 단위로 나눌지 결정
-    builtins.data_train = torchvision.datasets.FashionMNIST('./data',
-        download=True,train=True,transform=ToTensor()) # torchvision 라이브러리의 datasets 모듈을 사용하여 FashionMNIST 데이터셋을 불러옵니다. './data'는 데이터셋이 저장될 경로를 지정하며, download=True는 해당 경로에 데이터가 없을 경우 인터넷에서 자동으로 다운로드하도록 설정합니다. train=True는 학습용 데이터셋을 불러오는 것을 의미하고, transform=ToTensor()는 데이터셋의 이미지들을 파이토치 텐서로 변환하는 함수를 적용
+    data_train = torchvision.datasets.FashionMNIST('./data',
+        download=True,train=True,transform=ToTensor()) # torchvision 라이브러리의 datasets 모듈을 사용하여 FashionMNIST 데이터셋을 불러옵니다. './data'는 데이터셋이 저장될 경로를 지정하며, download=True는 해당 경로에 데이터가 없을 경우 인터넷에서 자동으로 다운로드하도록 설정합니다. train=True는 학습용 데이터셋을 불러오는 것을 의미하고, transform=ToTensor()는 데이터셋의 이미지들을 파이토치 텐서로 변환하는 함수를 적용.
     builtins.data_test = torchvision.datasets.FashionMNIST('./data', 
-        download=True,train=False,transform=ToTensor()) # 테스트 데이터셋을 불러오는 코드입니다. train=False로 설정하여 학습용이 아닌 테스트용 데이터셋을 불러옴
+        download=True,train=False,transform=ToTensor()) # 테스트 데이터셋을 불러오는 코드입니다. train=False로 설정하여 학습용이 아닌 테스트용 데이터셋을 불러옴.
     
-    builtins.data_train, builtins.data_vaild = random_split(data_train, [50000, 10000])
+    builtins.data_train, builtins.data_valid = random_split(data_train, [50000, 10000]) # Valid 데이터셋을 사용하기 위해 60000개의 Train 데이터셋을 50000, 10000개의 데이터셋으로 분할.
 
-    print(len(data_train))
-    print(len(data_test))
-    print(len(data_vaild))
+    data_valid.dataset.train = False # Vaild 데이터셋이 학습되지 않게 설정.
+
+    builtins.train_loader = torch.utils.data.DataLoader(data_train,batch_size=batch_size, shuffle=True) # 학습 데이터셋을 데이터 로더에 로드합니다. 데이터 로더는 데이터셋을 지정된 배치 크기에 맞게 나누고, 이를 반복 가능한 객체로 만들어 학습 과정에서 쉽게 사용할 수 있게 도움. 
+    builtins.valid_loader = torch.utils.data.DataLoader(data_valid, batch_size=batch_size, shuffle=True) # Valid 데이터셋을 DaterLoader에 로드.
+    builtins.test_loader = torch.utils.data.DataLoader(data_test, batch_size=batch_size, shuffle=True) # Test 데이터셋을 DaterLoader에 로드.
     
-    builtins.train_loader = torch.utils.data.DataLoader(data_train,batch_size=batch_size, shuffle=True) # 학습 데이터셋을 데이터 로더에 로드합니다. 데이터 로더는 데이터셋을 지정된 배치 크기에 맞게 나누고, 이를 반복 가능한 객체로 만들어 학습 과정에서 쉽게 사용할 수 있게 도움. // 
-    builtins.test_loader = torch.utils.data.DataLoader(data_test, batch_size=batch_size, shuffle=True)
-    builtins.valid_loader = torch.utils.data.DataLoader(data_vaild, batch_size=batch_size, shuffle=True)
 
     
 
@@ -117,8 +117,6 @@ def train_long(net,train_loader,test_loader,epochs=5,lr=0.01,optimizer=None,loss
         print("Epoch {} done, validation acc = {}, validation loss = {}".format(epoch,va,vl)) # 에폭의 학습 결과와 검증 결과를 출력
 
 # 학습 및 검증 데이터에 대한 정확도와 손실을 시각화하는 Python 함수인데 Matplotlib 라이브러리를 사용하여 결과를 그래프로 표시
-# valid가 출력되지 않는 오류가 있음.
-# 결과 시각화에서 그래프 추가 가능하면 좋을듯? p-r, mAP?
 
 def plot_results(hist): # plot_results라는 함수를 정의하는데 hist라는 이름의 딕셔너리를 매개변수로 받는데 학습과 검증 과정의 정확도와 손실이 배열 형태로 저장되어 있음
     plt.figure(figsize=(15,5)) # 새로운 그래프 창을 만들고, 크기를 가로 15인치, 세로 5인치로 설정
