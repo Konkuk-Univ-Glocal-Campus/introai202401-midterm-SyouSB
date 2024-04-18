@@ -23,10 +23,10 @@ default_device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # 1. vaild 추가
 # 2. 함수명(fasion)으로 수정
 
-def load_mnist(batch_size=64): # load_mnist라는 이름의 함수를 정의하고, 이 함수는 기본적으로 batch_size 매개변수를 64로 설정합니다. 이 매개변수는 데이터를 얼마나 많은 단위로 나눌지 결정
-    builtins.data_train = torchvision.datasets.MNIST('./data',
-        download=True,train=True,transform=ToTensor()) # torchvision 라이브러리의 datasets 모듈을 사용하여 MNIST 데이터셋을 불러옵니다. './data'는 데이터셋이 저장될 경로를 지정하며, download=True는 해당 경로에 데이터가 없을 경우 인터넷에서 자동으로 다운로드하도록 설정합니다. train=True는 학습용 데이터셋을 불러오는 것을 의미하고, transform=ToTensor()는 데이터셋의 이미지들을 파이토치 텐서로 변환하는 함수를 적용
-    builtins.data_test = torchvision.datasets.MNIST('./data', 
+def load_FashionMNIST(batch_size=64): # load_mnist라는 이름의 함수를 정의하고, 이 함수는 기본적으로 batch_size 매개변수를 64로 설정합니다. 이 매개변수는 데이터를 얼마나 많은 단위로 나눌지 결정
+    builtins.data_train = torchvision.datasets.FashionMNIST('./data',
+        download=True,train=True,transform=ToTensor()) # torchvision 라이브러리의 datasets 모듈을 사용하여 FashionMNIST 데이터셋을 불러옵니다. './data'는 데이터셋이 저장될 경로를 지정하며, download=True는 해당 경로에 데이터가 없을 경우 인터넷에서 자동으로 다운로드하도록 설정합니다. train=True는 학습용 데이터셋을 불러오는 것을 의미하고, transform=ToTensor()는 데이터셋의 이미지들을 파이토치 텐서로 변환하는 함수를 적용
+    builtins.data_test = torchvision.datasets.FashionMNIST('./data', 
         download=True,train=False,transform=ToTensor()) # 테스트 데이터셋을 불러오는 코드입니다. train=False로 설정하여 학습용이 아닌 테스트용 데이터셋을 불러옴
     builtins.train_loader = torch.utils.data.DataLoader(data_train,batch_size=batch_size) # 학습 데이터셋을 데이터 로더에 로드합니다. 데이터 로더는 데이터셋을 지정된 배치 크기에 맞게 나누고, 이를 반복 가능한 객체로 만들어 학습 과정에서 쉽게 사용할 수 있게 도움
     builtins.test_loader = torch.utils.data.DataLoader(data_test,batch_size=batch_size)
@@ -113,11 +113,11 @@ def plot_results(hist): # plot_results라는 함수를 정의하는데 hist라�
     plt.figure(figsize=(15,5)) # 새로운 그래프 창을 만들고, 크기를 가로 15인치, 세로 5인치로 설정
     plt.subplot(121) # 두 개의 그래프를 나란히 표시하기 위해 첫 번째 위치(1행 2열의 첫 번째)에 서브플롯을 생성
     plt.plot(hist['train_acc'], label='Training acc') # hist 딕셔너리에서 학습 정확도(train_acc)를 추출하여 그래프로 그리는데 라벨을 'Training acc'로 지정하여 그래프에 범례를 추가
-    plt.plot(hist['val_acc'], label='Validation acc') # hist 딕셔너리에서 검증 정확도(val_acc)를 추출하여 그래프로 그리는데 라벨을 'Validation acc'로 지정
+    plt.plot(hist['test_acc'], label='Validation acc') # hist 딕셔너리에서 검증 정확도(val_acc)를 추출하여 그래프로 그리는데 라벨을 'Validation acc'로 지정
     plt.legend() # 그래프에 범례를 추가하는데 각 데이터 세트를 구분하기 위해 사용
     plt.subplot(122) # 두 번째 위치(1행 2열의 두 번째)에 또 다른 서브플롯을 생성
     plt.plot(hist['train_loss'], label='Training loss') # hist 딕셔너리에서 학습 손실(train_loss)을 추출하여 그래프로 그린는데 라벨을 'Training loss'로 지정
-    plt.plot(hist['val_loss'], label='Validation loss') # hist 딕셔너리에서 검증 손실(val_loss)을 추출하여 그래프로 그리는데 라벨을 'Validation loss'로 지정
+    plt.plot(hist['test_loss'], label='Validation loss') # hist 딕셔너리에서 검증 손실(val_loss)을 추출하여 그래프로 그리는데 라벨을 'Validation loss'로 지정
     plt.legend() # 그래프에 범례를 추가
 
 # 컨볼루션(Convolution) 연산을 시각화하는 함수 plot_convolution을 정의하는데 특정 커널을 사용하여 이미지에 적용한 결과를 보여줌 
