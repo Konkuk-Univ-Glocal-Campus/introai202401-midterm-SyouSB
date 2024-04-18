@@ -122,11 +122,11 @@ def plot_results(hist): # plot_results라는 함수를 정의하는데 hist라�
     plt.figure(figsize=(15,5)) # 새로운 그래프 창을 만들고, 크기를 가로 15인치, 세로 5인치로 설정
     plt.subplot(121) # 두 개의 그래프를 나란히 표시하기 위해 첫 번째 위치(1행 2열의 첫 번째)에 서브플롯을 생성
     plt.plot(hist['train_acc'], label='Training acc') # hist 딕셔너리에서 학습 정확도(train_acc)를 추출하여 그래프로 그리는데 라벨을 'Training acc'로 지정하여 그래프에 범례를 추가
-    plt.plot(hist['test_acc'], label='Validation acc') # hist 딕셔너리에서 검증 정확도(val_acc)를 추출하여 그래프로 그리는데 라벨을 'Validation acc'로 지정
+    plt.plot(hist['val_acc'], label='Validation acc') # hist 딕셔너리에서 검증 정확도(val_acc)를 추출하여 그래프로 그리는데 라벨을 'Validation acc'로 지정
     plt.legend() # 그래프에 범례를 추가하는데 각 데이터 세트를 구분하기 위해 사용
     plt.subplot(122) # 두 번째 위치(1행 2열의 두 번째)에 또 다른 서브플롯을 생성
     plt.plot(hist['train_loss'], label='Training loss') # hist 딕셔너리에서 학습 손실(train_loss)을 추출하여 그래프로 그린는데 라벨을 'Training loss'로 지정
-    plt.plot(hist['test_loss'], label='Validation loss') # hist 딕셔너리에서 검증 손실(val_loss)을 추출하여 그래프로 그리는데 라벨을 'Validation loss'로 지정
+    plt.plot(hist['val_loss'], label='Validation loss') # hist 딕셔너리에서 검증 손실(val_loss)을 추출하여 그래프로 그리는데 라벨을 'Validation loss'로 지정
     plt.legend() # 그래프에 범례를 추가
 
 # 컨볼루션(Convolution) 연산을 시각화하는 함수 plot_convolution을 정의하는데 특정 커널을 사용하여 이미지에 적용한 결과를 보여줌 
