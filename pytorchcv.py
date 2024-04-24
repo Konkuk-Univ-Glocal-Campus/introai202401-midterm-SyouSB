@@ -19,9 +19,7 @@ default_device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Python에서 MNIST 데이터셋을 불러와서 처리하는 과정
 # 이 함수를 실행하면, builtins 모듈을 통해 전역 변수로 설정된 data_train, data_test, train_loader, test_loader가 생성되어 어디서든 접근할 수 있게 됩니다. 이러한 설정은 함수 내에서 데이터를 처리하고, 이후에 다른 부분에서 해당 데이터를 사용할 때 유용하게 활용될 수 있음
-
-# 이 함수를 수정해야 함.
-# 1. vaild 추가
+# train을 분리하여 valid로 사용하게 수정.
 
 def load_mnist(batch_size=64, seed=10): # load_mnist라는 이름의 함수를 정의하고, 이 함수는 기본적으로 batch_size 매개변수를 64로 설정합니다. 이 매개변수는 데이터를 얼마나 많은 단위로 나눌지 결정
     torch.manual_seed(seed) # 재현성을 보장하기 위해 seed 설정.
@@ -33,7 +31,7 @@ def load_mnist(batch_size=64, seed=10): # load_mnist라는 이름의 함수를 �
     
     builtins.data_train, builtins.data_valid = random_split(data_train, [50000, 10000]) # Valid 데이터셋을 사용하기 위해 60000개의 Train 데이터셋을 50000, 10000개의 데이터셋으로 분할.
 
-    data_valid.dataset.train = False # Vaild 데이터셋이 학습되지 않게 설정.
+    data_valid.dataset.train = False # Valid 데이터셋이 학습되지 않게 설정.
 
     builtins.train_loader = torch.utils.data.DataLoader(data_train,batch_size=batch_size, shuffle=True) # 학습 데이터셋을 데이터 로더에 로드합니다. 데이터 로더는 데이터셋을 지정된 배치 크기에 맞게 나누고, 이를 반복 가능한 객체로 만들어 학습 과정에서 쉽게 사용할 수 있게 도움. 
     builtins.valid_loader = torch.utils.data.DataLoader(data_valid, batch_size=batch_size, shuffle=True) # Valid 데이터셋을 DaterLoader에 로드.
